@@ -8,4 +8,6 @@ import java.util.List;
 @Service
 public interface BlogService {
     List<BlogInfoResponse> getBlogList();
+
+    BlogInfoResponse getBlogDetail(Integer id);
 }

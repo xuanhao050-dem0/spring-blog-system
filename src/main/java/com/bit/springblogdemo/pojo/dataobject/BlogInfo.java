@@ -10,7 +10,7 @@ public class BlogInfo {
     @TableId(value="id",type= IdType.AUTO)
     private Integer id;
     private String title;
-
+    private String content;
     private Integer userId;
     private Integer deleteFlag;
     private LocalDateTime createTime;

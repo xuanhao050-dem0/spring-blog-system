@@ -1,9 +1,7 @@
 package com.bit.springblogdemo.controller;
 
-import com.bit.springblogdemo.pojo.dataobject.BlogInfo;
 import com.bit.springblogdemo.pojo.response.BlogInfoResponse;
-import com.bit.springblogdemo.service.BlogService;
-import com.bit.springblogdemo.service.impl.BlogServicerImpl;
+import com.bit.springblogdemo.service.impl.BlogServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +17,7 @@ public class BlogController {
      * 2.构造方法
      */
     @Autowired
-    BlogService blogService;
+    BlogServiceImpl blogServiceImpl;
 
 //    private final BlogServicerImpl blogServicer;
 //
@@ -29,7 +27,12 @@ public class BlogController {
 
     @RequestMapping("/getList")
     public List<BlogInfoResponse> getBlogList(){
-        return blogService.getBlogList();
+        return blogServiceImpl.getBlogList();
 
+    }
+
+    @RequestMapping("/getBlogDetail")
+    public BlogInfoResponse getBlogDetail(Integer id){
+        return blogServiceImpl.getBlogDetail(id);
     }
 }
