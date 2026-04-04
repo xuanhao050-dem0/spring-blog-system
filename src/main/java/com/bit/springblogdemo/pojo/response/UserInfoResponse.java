@@ -4,10 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class UserLoginResponse {
-    public Integer id;
-    public String token;
+public class UserInfoResponse {
+
+    private Integer id;
+    private String userName;
+
+    private String githubUrl;
+
+
+
+
 }

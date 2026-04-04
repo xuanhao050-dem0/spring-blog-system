@@ -21,7 +21,7 @@ public class JWTUtil {
     public static SecretKey key= Keys.hmacShaKeyFor(s.getBytes(StandardCharsets.UTF_8));
 
     //token过期时间
-    public static final long expirationTime = 1 * 60 * 60 * 1000;
+    public static final long expirationTime = 24 * 60 * 60 * 1000;
 
 
 
@@ -42,6 +42,11 @@ public class JWTUtil {
     }
 
 
+    /**
+     * 验证token
+     * @param token
+     * @return
+     */
 
     public static Claims parseToken(String token) {
 

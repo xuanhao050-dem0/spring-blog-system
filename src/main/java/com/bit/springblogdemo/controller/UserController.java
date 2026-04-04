@@ -2,6 +2,7 @@ package com.bit.springblogdemo.controller;
 
 
 import com.bit.springblogdemo.pojo.request.UserLoginRequest;
+import com.bit.springblogdemo.pojo.response.UserInfoResponse;
 import com.bit.springblogdemo.pojo.response.UserLoginResponse;
 import com.bit.springblogdemo.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,10 @@ public class UserController {
         return userService.login(LoginRequest);
     }
 
-
+    @RequestMapping("/getUserInfo")
+    public UserInfoResponse getUserInfo(Integer id){
+        return userService.getUserInfo(id);
+    }
 
 
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { blogApi } from './api/blog'
 import BlogCard from './components/BlogCard'
 import BlogDetail from './components/BlogDetail'
+import LoginModal from './components/LoginModal'
 import './App.css'
 
 export default function App() {
@@ -9,9 +10,24 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedBlogId, setSelectedBlogId] = useState(null)
+  const [showLogin, setShowLogin] = useState(false)
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
+    const savedToken = localStorage.getItem('token')
+    const savedUserId = localStorage.getItem('userId')
+    if (savedToken && savedUserId) {
+      setUser({ id: savedUserId })
+    }
     fetchBlogs()
+
+    // 监听 Token 失效事件（由 api/blog.js 响应拦截器触发）
+    const handleAuthLogout = () => {
+      setUser(null)
+      setShowLogin(true)
+    }
+    window.addEventListener('auth:logout', handleAuthLogout)
+    return () => window.removeEventListener('auth:logout', handleAuthLogout)
   }, [])
 
   const fetchBlogs = async () => {
@@ -25,10 +41,24 @@ export default function App() {
         setError(res.errMsg || '加载失败')
       }
     } catch (err) {
+      // Token 无效（401）时弹出登录框，其余错误保持显示错误信息
+      if (err.message.includes('401')) {
+        setShowLogin(true)
+      }
       setError(err.message)
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleLoginSuccess = (userData) => {
+    setUser({ id: userData.id })
+  }
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userId')
+    setUser(null)
   }
 
   return (
@@ -51,11 +81,25 @@ export default function App() {
                   <p className="header__subtitle">Powered by Spring Boot + React</p>
                 </div>
               </div>
-              <button className="btn-refresh" onClick={fetchBlogs} title="刷新">
-                <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                  <path d="M15 9a6 6 0 1 1-1.5-4.2M15 3v4h-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
+              <div className="header__actions">
+                {user ? (
+                  <div className="user-info">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                      <circle cx="9" cy="6" r="3" stroke="currentColor" strokeWidth="1.5" />
+                      <path d="M3 15c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    <span>用户 {user.id}</span>
+                    <button className="btn-logout" onClick={handleLogout}>退出</button>
+                  </div>
+                ) : (
+                  <button className="btn-login-header" onClick={() => setShowLogin(true)}>登录</button>
+                )}
+                <button className="btn-refresh" onClick={fetchBlogs} title="刷新">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M15 9a6 6 0 1 1-1.5-4.2M15 3v4h-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </header>
 
@@ -113,6 +157,12 @@ export default function App() {
             <p>&copy; 2026 Spring Blog Demo &mdash; Spring Boot + React</p>
           </footer>
         </>
+      )}
+      {showLogin && (
+        <LoginModal
+          onClose={() => setShowLogin(false)}
+          onSuccess={handleLoginSuccess}
+        />
       )}
     </div>
   )
